@@ -1,25 +1,24 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.0;
+pragma solidity 0.8.19;
 
 import "./Ownable.sol";
 
 contract Constants {
-    uint256 public tradeFlag = 1;
-    uint256 public basicFlag = 0;
-    uint256 public dividendFlag = 1;
+    bool public tradeFlag = true;
+    bool public dividendFlag = true;
 }
 
 contract GasContract is Ownable, Constants {
-    uint256 public totalSupply = 0; // cannot be updated
-    uint256 public paymentCounter = 0;
+    uint256 private totalSupply; // cannot be updated
+    uint256 private paymentCounter;
     mapping(address => uint256) public balances;
-    uint256 public tradePercent = 12;
-    address public contractOwner;
-    uint256 public tradeMode = 0;
+    uint256 private tradePercent = 12;
+    address private contractOwner;
+    uint256 private tradeMode;
     mapping(address => Payment[]) public payments;
     mapping(address => uint256) public whitelist;
     address[5] public administrators;
-    bool public isReady = false;
+    bool private isReady;
     enum PaymentType {
         Unknown,
         BasicPayment,
@@ -29,7 +28,7 @@ contract GasContract is Ownable, Constants {
     }
     PaymentType constant defaultPayment = PaymentType.Unknown;
 
-    History[] public paymentHistory; // when a payment was updated
+    History[] private paymentHistory; // when a payment was updated
 
     struct Payment {
         PaymentType paymentType;
@@ -152,7 +151,7 @@ contract GasContract is Ownable, Constants {
 
     function getTradingMode() public view returns (bool mode_) {
         bool mode = false;
-        if (tradeFlag == 1 || dividendFlag == 1) {
+        if (tradeFlag || dividendFlag) {
             mode = true;
         } else {
             mode = false;
@@ -317,7 +316,7 @@ contract GasContract is Ownable, Constants {
     }
 
 
-    function getPaymentStatus(address sender) public returns (bool, uint256) {        
+    function getPaymentStatus(address sender) public view returns (bool, uint256) {        
         return (whiteListStruct[sender].paymentStatus, whiteListStruct[sender].amount);
     }
 
